@@ -1,3 +1,3 @@
-![Alt text](./public/images/kin.svg "a title")
+![Alt text](https://raw.githubusercontent.com/alisvila/kin-ranking/main/public/kin.svg "a title")
 
-#kin ranking discord bot
+# kin ranking discord bot
