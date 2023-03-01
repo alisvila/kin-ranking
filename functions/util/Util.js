@@ -10,30 +10,38 @@ async function sendErrorLog(client, error, type) {
     if (
       error.message?.includes("Missing Access") ||
       error.message?.includes("Missing Permissions")
-    ) return;
+    )
+      return;
 
     if (
-      error.stack?.includes?.("DeprecationWarning: Listening to events on the Db class")
-    ) return;
+      error.stack?.includes?.(
+        "DeprecationWarning: Listening to events on the Db class"
+      )
+    )
+      return;
 
     const { ERROR_LOGS_CHANNEL } = require("../../config.json");
     const channelId = ERROR_LOGS_CHANNEL;
     if (!channelId) {
-      return client.logger.error("ERR_LOG", error?.stack || `${error}`);
+      return;
+      // return client.logger.error("ERR_LOG", error?.stack || `${error}`);
     }
 
-    const channel = (client.channels.cache.get(channelId) ||
-      (await client.channels.fetch(channelId)));
+    const channel =
+      client.channels.cache.get(channelId) ||
+      (await client.channels.fetch(channelId));
 
     if (!channel || !havePermissions(channel)) {
-      return client.logger.error("ERR_LOG", error?.stack || `${error}`);
+      return;
+      // return client.logger.error("ERR_LOG", error?.stack || `${error}`);
     }
 
     const webhooks = await channel.fetchWebhooks();
     const hook = webhooks.first();
 
     if (!hook) {
-      return client.logger.error("ERR_LOG", error?.stack || `${error}`);
+      return;
+      // return client.logger.error("ERR_LOG", error?.stack || `${error}`);
     }
 
     const code = error.code || "N/A";
@@ -57,7 +65,8 @@ async function sendErrorLog(client, error, type) {
 
     if (typeof stack === "string" && stack.length >= 4096) {
       console.error(stack);
-      stack = "An error occurred but was too long to send to Discord, check your console.";
+      stack =
+        "An error occurred but was too long to send to Discord, check your console.";
     }
 
     const { codeBlock } = require("@discordjs/builders");
@@ -69,7 +78,7 @@ async function sendErrorLog(client, error, type) {
         { name: "Code", value: code.toString() },
         { name: "httpStatus", value: httpStatus.toString() },
         { name: "Timestamp", value: client.logger.now },
-        { name: "Request data", value: codeBlock(jsonString?.substr(0, 1020)) }
+        { name: "Request data", value: codeBlock(jsonString?.substr(0, 1020)) },
       ])
       .setDescription(`${codeBlock(stack)}`)
       .setColor(type === "error" ? "Red" : "Orange");
@@ -88,7 +97,8 @@ async function sendErrorLog(client, error, type) {
  */
 function havePermissions(resolveable) {
   const ch = "channel" in resolveable ? resolveable.channel : resolveable;
-  if (ch instanceof DJS.ThreadChannel || ch instanceof DJS.DMChannel) return true;
+  if (ch instanceof DJS.ThreadChannel || ch instanceof DJS.DMChannel)
+    return true;
   return (
     ch.permissionsFor(resolveable.guild.members.me)?.has("ViewChannel") &&
     ch.permissionsFor(resolveable.guild.members.me)?.has("SendMessages") &&
@@ -101,17 +111,15 @@ function havePermissions(resolveable) {
  * @returns {string}
  */
 function toCapitalize(str) {
-  if ((str === null) || (str === "")) {
+  if (str === null || str === "") {
     return false;
   } else {
     str = str.toString();
   }
 
-  return str.replace(/\w\S*/g,
-    function(txt) {
-      return txt.charAt(0).toUpperCase() +
-        txt.substr(1).toLowerCase();
-    });
+  return str.replace(/\w\S*/g, function (txt) {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
 }
 
 /**
@@ -127,7 +135,7 @@ function formatNumber(n) {
  * @returns {string}
  */
 function formatInt(int) {
-  return (int < 10 ? `0${int}` : int);
+  return int < 10 ? `0${int}` : int;
 }
 
 /**
@@ -140,11 +148,11 @@ function formatDuration(millisec) {
   const seconds = Math.round((millisec % 60000) / 1000);
   const minutes = Math.floor((millisec % 3600000) / 60000);
   const hours = Math.floor(millisec / 3600000);
-  if (hours > 0) return `${formatInt(hours)}:${formatInt(minutes)}:${formatInt(seconds)}`;
+  if (hours > 0)
+    return `${formatInt(hours)}:${formatInt(minutes)}:${formatInt(seconds)}`;
   if (minutes > 0) return `${formatInt(minutes)}:${formatInt(seconds)}`;
   return `00:${formatInt(seconds)}`;
-};
-
+}
 
 /**
  * Convert formatted duration to seconds
@@ -158,14 +166,15 @@ function toMilliSeconds(input) {
     const time = input.split(":").reverse();
     let s = 0;
     for (let i = 0; i < 3; i++)
-      if (time[i]) s += Number(time[i].replace(/[^\d.]+/g, "")) * Math.pow(60, i);
-    if (time.length > 3) s += Number(time[3].replace(/[^\d.]+/g, "")) * 24 * 60 * 60;
+      if (time[i])
+        s += Number(time[i].replace(/[^\d.]+/g, "")) * Math.pow(60, i);
+    if (time.length > 3)
+      s += Number(time[3].replace(/[^\d.]+/g, "")) * 24 * 60 * 60;
     return Number(s * 1000);
   } else {
     return Number(input.replace(/[^\d.]+/g, "") * 1000) || 0;
   }
 }
-
 
 /**
  * Parse number from input
@@ -173,7 +182,8 @@ function toMilliSeconds(input) {
  * @returns {number}
  */
 function parseNumber(input) {
-  if (typeof input === "string") return Number(input.replace(/[^\d.]+/g, "")) || 0;
+  if (typeof input === "string")
+    return Number(input.replace(/[^\d.]+/g, "")) || 0;
   return Number(input) || 0;
 }
 
@@ -195,21 +205,31 @@ function canModifyQueue(interaction) {
   const clientChannelId = interaction.guild.members.me.voice.channelId;
 
   if (!memberChannelId) {
-
     const embed1 = new DJS.EmbedBuilder()
       .setDescription("You need to join a voice channel first!")
       .setColor("Orange");
 
-    return interaction.editReply({ ephemeral: true, embeds: [embed1], allowedMentions: { repliedUser: false } }).catch(console.error);
+    return interaction
+      .editReply({
+        ephemeral: true,
+        embeds: [embed1],
+        allowedMentions: { repliedUser: false },
+      })
+      .catch(console.error);
   }
 
   if (memberChannelId !== clientChannelId) {
-
     const embed2 = new DJS.EmbedBuilder()
       .setDescription("You must be in the same voice channel as me!")
       .setColor("ORANGE");
 
-    return interaction.editReply({ ephemeral: true, embeds: [embed2], allowedMentions: { repliedUser: false } }).catch(console.error);
+    return interaction
+      .editReply({
+        ephemeral: true,
+        embeds: [embed2],
+        allowedMentions: { repliedUser: false },
+      })
+      .catch(console.error);
   }
 
   return true;
@@ -225,5 +245,5 @@ module.exports = {
   toMilliSeconds,
   parseNumber,
   codeContent,
-  canModifyQueue
+  canModifyQueue,
 };

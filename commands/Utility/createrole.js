@@ -38,11 +38,11 @@ module.exports = {
         message.author.displayAvatarURL()
       )
       .setColor("RANDOM").setDescription(`
-**Role: ** ${name}
-**Action: ** New Role Created
-**Role Color: ** ${args[0]}
-**Channel: ** ${message.channel}
-**By: ** ${message.member}
+        **Role: ** ${name}
+        **Action: ** New Role Created
+        **Role Color: ** ${args[0]}
+        **Channel: ** ${message.channel}
+        **By: ** ${message.member}
       `);
     message.channel.send({ embeds: [embed] });
   },

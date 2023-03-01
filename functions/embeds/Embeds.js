@@ -29,10 +29,10 @@ function rootEmbed(interaction) {
     throw Error("'interaction' must be passed down as param! (baseEmbed)");
   }
 
-  return new EmbedBuilder()
-    .setColor(interaction.guild.members.me.displayColor || "#00FFFF");
+  return new EmbedBuilder().setColor(
+    interaction.guild.members.me.displayColor || "#00FFFF"
+  );
 }
-
 
 /**
  * Returns a custom embed
@@ -52,7 +52,9 @@ function infoMessage(interaction, text) {
     .setDescription(text)
     .setColor(interaction.guild.members.me.displayColor || "#00FFFF");
 
-  return interaction.editReply({ embeds: [embedI], allowedMentions: { repliedUser: false } }).catch(console.error);
+  return interaction
+    .editReply({ embeds: [embedI], allowedMentions: { repliedUser: false } })
+    .catch(console.error);
 }
 
 /**
@@ -69,11 +71,15 @@ function warnMessage(interaction, text) {
     throw Error("'text' must be passed down as param! (WarnMessage)");
   }
 
-  const embedW = new EmbedBuilder()
-    .setDescription(text)
-    .setColor("Orange");
+  const embedW = new EmbedBuilder().setDescription(text).setColor("Orange");
 
-  return interaction.editReply({ ephemeral: true, embeds: [embedW], allowedMentions: { repliedUser: false } }).catch(console.error);
+  return interaction
+    .editReply({
+      ephemeral: true,
+      embeds: [embedW],
+      allowedMentions: { repliedUser: false },
+    })
+    .catch(console.error);
 }
 
 /**
@@ -90,11 +96,15 @@ function errorMessage(interaction, text) {
     throw Error("'text' must be passed down as param! (ErrorMessage)");
   }
 
-  const embedE = new EmbedBuilder()
-    .setDescription(text)
-    .setColor("Red");
+  const embedE = new EmbedBuilder().setDescription(text).setColor("Red");
 
-  return interaction.editReply({ ephemeral: true, embeds: [embedE], allowedMentions: { repliedUser: false } }).catch(console.error);
+  return interaction
+    .editReply({
+      ephemeral: true,
+      embeds: [embedE],
+      allowedMentions: { repliedUser: false },
+    })
+    .catch(console.error);
 }
 
 /**
@@ -123,9 +133,7 @@ function queueMessage(client, queue, text, color) {
   let colour = queue.guild.members.me.displayColor || "#00FFFF";
   if (color) colour = color;
 
-  const embedQ = new EmbedBuilder()
-    .setDescription(text)
-    .setColor("Blue");
+  const embedQ = new EmbedBuilder().setDescription(text).setColor("Blue");
 
   return queue.metadata.channel.send({ embeds: [embedQ] });
 }
@@ -136,5 +144,5 @@ module.exports = {
   infoMessage,
   warnMessage,
   errorMessage,
-  queueMessage
+  queueMessage,
 };

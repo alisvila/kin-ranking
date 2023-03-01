@@ -7,7 +7,7 @@ module.exports = {
   botPerms: ["EmbedLinks", "ManageRoles"],
   run: async (client, message, args) => {
     const role = message.mentions.roles.first();
-   
+
     if (!role) {
       return message.channel.send("`Usage: =delrole <role>`");
     }
